@@ -10,16 +10,10 @@
 
     <h1>Library Home</h1>
 
-    <!-- Flash messages -->
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <ul>
-          {% for message in messages %}
-            <li>{{ message }}</li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
+    <!-- Success message -->
+    {% if message %}
+      <p style="color: green;">{{ message }}</p>
+    {% endif %}
 
     <!-- Search Field -->
     <form method="get" action="{{ url_for('home') }}">
