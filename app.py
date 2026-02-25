@@ -1,5 +1,6 @@
 import os
 from flask import Flask, render_template, request
+from flask import redirect, url_for, flash
 from data_models import db, Author, Book
 from datetime import datetime  # Preventing date conversion error!!
 
@@ -73,7 +74,7 @@ def add_book():
 
 @app.route("/")
 def home():
-    """Display all books with optional sorting and keyword search."""
+    """Display all books with sorting and keyword search."""
     sort = request.args.get("sort")       # Sort parameter
     keyword = request.args.get("keyword") # Keyword search
 
@@ -97,6 +98,27 @@ def home():
 
     return render_template("home.html", books=books, keyword=keyword)
 
+
+@app.route("/book/<int:book_id>/delete", methods=["POST"])
+def delete_book(book_id):
+    """Delete a book and its author if no other books exist, then show success message."""
+    book = Book.query.get_or_404(book_id)
+    author = book.author
+
+    # Delete the book
+    db.session.delete(book)
+    db.session.commit()
+
+    # Delete author if no other books
+    if author and not author.books:
+        db.session.delete(author)
+        db.session.commit()
+
+    message = f"Book '{book.title}' deleted successfully!"
+
+    # Render home.html
+    books = Book.query.all()
+    return render_template("home.html", books=books, keyword=None, message=message)
 
 if __name__ == "__main__":
     app.run(debug=True)

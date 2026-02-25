@@ -10,14 +10,25 @@
 
     <h1>Library Home</h1>
 
-    <!-- Suchfeld -->
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Search Field -->
     <form method="get" action="{{ url_for('home') }}">
       <input type="text" name="keyword" placeholder="Search by title or author" value="{{ keyword or '' }}">
       <button type="submit">Search</button>
     </form>
     <hr>
 
-    <!-- Sortier-Dropdown -->
+    <!-- Sort-Dropdown -->
     <form method="get" action="{{ url_for('home') }}">
       <label for="sort">Sort books by:</label>
       <select name="sort" id="sort" onchange="this.form.submit()">
@@ -30,11 +41,16 @@
 
     {% for book in books %}
       <div>
-        <!-- Titel und Autor -->
+        <!-- Title and Author -->
         <h3>{{ book.title }}</h3>
         <p>by {{ book.author.name if book.author else "Unknown" }}</p>
         <p>ISBN: {{ book.isbn }}</p>
         <p>Publication Year: {{ book.publication_year }}</p>
+
+        <!-- Delete Book button -->
+        <form method="post" action="{{ url_for('delete_book', book_id=book.book_id) }}" style="display:inline;">
+          <button type="submit">Delete Book</button>
+        </form>
       </div>
       <hr>
     {% endfor %}
