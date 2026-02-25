@@ -10,11 +10,19 @@
 
     <h1>Library Home</h1>
 
+    <!-- Sortier-Dropdown -->
+    <form method="get" action="{{ url_for('home') }}">
+      <label for="sort">Sort books by:</label>
+      <select name="sort" id="sort" onchange="this.form.submit()">
+        <option value="" {% if not request.args.get('sort') %}selected{% endif %}>Original</option>
+        <option value="title" {% if request.args.get('sort') == 'title' %}selected{% endif %}>Title</option>
+        <option value="author" {% if request.args.get('sort') == 'author' %}selected{% endif %}>Author</option>
+      </select>
+    </form>
+    <hr>
+
     {% for book in books %}
       <div>
-        <!-- Cover-Bild  -->
-        <img src="https://via.placeholder.com/50x75" alt="Cover"><br>
-
         <!-- Titel und Autor -->
         <h3>{{ book.title }}</h3>
         <p>by {{ book.author.name if book.author else "Unknown" }}</p>

@@ -71,13 +71,17 @@ def add_book():
 
 @app.route("/")
 def home():
-    books = Book.query.all()
+    sort = request.args.get("sort")  # Sortierparameter aus URL holen
+    if sort == "title":
+        books = Book.query.order_by(Book.title).all()
+    elif sort == "author":
+        # Join mit Author und nach Name sortieren
+        books = Book.query.join(Author).order_by(Author.name).all()
+    else:
+        books = Book.query.all()
+
     return render_template("home.html", books=books)
 
 
 if __name__ == "__main__":
     app.run(debug=True)
-
-
-# with app.app_context():
-#   db.create_all()
