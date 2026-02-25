@@ -1,7 +1,7 @@
 import os
 from flask import Flask, render_template, request
 from data_models import db, Author, Book
-
+from datetime import datetime  # Preventing date conversion error!!
 
 # Flask App erstellen
 app = Flask(__name__)
@@ -26,12 +26,15 @@ def add_author():
     message = None
 
     if request.method == "POST":
-        name = request.form.get("name")
-        birth_date = request.form.get("birth_date")
-        date_of_death = request.form.get("date_of_death")
+        # Strings aus Formular in date umwandeln
+        birth_date = datetime.strptime(request.form.get("birth_date"), "%Y-%m-%d").date() \
+            if request.form.get("birth_date") else None
+        date_of_death = datetime.strptime(request.form.get("date_of_death"), "%Y-%m-%d").date() \
+            if request.form.get("date_of_death") else None
 
+        # Neues Author-Objekt erstellen
         new_author = Author(
-            name=name,
+            name=request.form.get("name"),
             birth_date=birth_date,
             date_of_death=date_of_death
         )
@@ -50,16 +53,12 @@ def add_book():
     authors = Author.query.all()  # Dropdown
 
     if request.method == "POST":
-        title = request.form.get("title")
-        isbn = request.form.get("isbn")
-        publication_year = request.form.get("publication_year")
-        author_id = request.form.get("author_id")
-
+        # Daten aus Formular holen und direkt an Book übergeben
         new_book = Book(
-            isbn=isbn,
-            title=title,
-            publication_year=publication_year,
-            author_id=author_id
+            isbn=request.form.get("isbn"),
+            title=request.form.get("title"),
+            publication_year=request.form.get("publication_year"),
+            author_id=request.form.get("author_id")
         )
 
         db.session.add(new_book)
@@ -70,8 +69,14 @@ def add_book():
     return render_template("add_book.html", authors=authors, message=message)
 
 
+@app.route("/")
+def home():
+    books = Book.query.all()
+    return render_template("home.html", books=books)
+
+
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
 
 
 # with app.app_context():
