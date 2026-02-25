@@ -10,6 +10,13 @@
 
     <h1>Library Home</h1>
 
+    <!-- Suchfeld -->
+    <form method="get" action="{{ url_for('home') }}">
+      <input type="text" name="keyword" placeholder="Search by title or author" value="{{ keyword or '' }}">
+      <button type="submit">Search</button>
+    </form>
+    <hr>
+
     <!-- Sortier-Dropdown -->
     <form method="get" action="{{ url_for('home') }}">
       <label for="sort">Sort books by:</label>
